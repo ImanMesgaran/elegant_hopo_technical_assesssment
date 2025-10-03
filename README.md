@@ -33,7 +33,7 @@ A Flutter application designed for beauty package booking and session management
 
 ## 🏗️ Architecture
 
-This application follows **Clean Architecture** principles inspired by the [Awesome Weather App](https://github.com/ImanMesgaran/awesome_weather/blob/master/README.md), implementing a modular and scalable structure:
+This application follows **Clean Architecture** principles, implementing a modular and scalable structure:
 
 ### Core Architecture Layers
 
@@ -213,7 +213,6 @@ This project is part of a technical assessment and is not intended for commercia
 
 ## 🙏 Acknowledgments
 
-- Architecture inspiration from [Awesome Weather App](https://github.com/ImanMesgaran/awesome_weather/blob/master/README.md)
 - Flutter community for excellent packages and documentation
 - Material Design 3 for beautiful UI components
 
