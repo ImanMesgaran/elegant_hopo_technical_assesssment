@@ -12,9 +12,14 @@ class BookSessionPage extends StatefulWidget {
 
 class _BookSessionPageState extends State<BookSessionPage> {
   int selectedSessionIndex = 2; // Default to last session (index 2 - Session 3)
+  bool isScheduleModalOpen = false;
+  DateTime? selectedDate;
+  TimeOfDay? selectedTime;
+  String selectedDuration = '60 minutes';
+  String selectedTherapist = 'Dr. Sarah Johnson';
 
   // Sample session data (reversed order - oldest first)
-  final List<Map<String, dynamic>> sessions = [
+  List<Map<String, dynamic>> sessions = [
     {
       'sessionNumber': 1,
       'date': '12 August 2025',
@@ -54,9 +59,66 @@ class _BookSessionPageState extends State<BookSessionPage> {
               Expanded(child: _buildMainContent()),
             ],
           ),
+
+          // Schedule Modal
+          if (isScheduleModalOpen) _buildScheduleModal(),
         ],
       ),
     );
+  }
+
+  void _openScheduleModal() {
+    setState(() {
+      isScheduleModalOpen = true;
+      selectedDate = DateTime.now().add(const Duration(days: 1));
+      selectedTime = const TimeOfDay(hour: 10, minute: 0);
+    });
+  }
+
+  void _closeScheduleModal() {
+    setState(() {
+      isScheduleModalOpen = false;
+    });
+  }
+
+  void _confirmSchedule() {
+    if (selectedDate != null && selectedTime != null) {
+      final newSession = {
+        'sessionNumber': sessions.length + 1,
+        'date':
+            '${selectedDate!.day} ${_getMonthName(selectedDate!.month)} ${selectedDate!.year}',
+        'time':
+            '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}',
+        'isCompleted': false,
+        'showScheduleButton': false,
+        'duration': selectedDuration,
+        'therapist': selectedTherapist,
+      };
+
+      setState(() {
+        sessions.insert(0, newSession); // Add to beginning (newest first)
+        selectedSessionIndex = 0; // Select the new session
+        isScheduleModalOpen = false;
+      });
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return months[month - 1];
   }
 
   Widget _buildFloatingParticles() {
@@ -219,6 +281,510 @@ class _BookSessionPageState extends State<BookSessionPage> {
     );
   }
 
+  // Beautiful Schedule Modal with stunning animations
+  Widget _buildScheduleModal() {
+    return AnimatedOpacity(
+          opacity: isScheduleModalOpen ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          child: Container(
+            color: Colors.black.withOpacity(0.5),
+            child: Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.white, Colors.grey[50]!, Colors.white],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 30,
+                      offset: const Offset(0, 10),
+                    ),
+                    BoxShadow(
+                      color: const Color(0xFFFF6B00).withOpacity(0.1),
+                      blurRadius: 40,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Header with gradient background
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFFFF6B00),
+                              const Color(0xFFFF8C42),
+                              const Color(0xFFFFA500),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.schedule,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            const Expanded(
+                              child: Text(
+                                'Schedule New Session',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: _closeScheduleModal,
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Content
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Date Selection
+                            _buildDateSelector(),
+                            const SizedBox(height: 24),
+
+                            // Time Selection
+                            _buildTimeSelector(),
+                            const SizedBox(height: 24),
+
+                            // Duration Selection
+                            _buildDurationSelector(),
+                            const SizedBox(height: 24),
+
+                            // Therapist Selection
+                            _buildTherapistSelector(),
+                            const SizedBox(height: 32),
+
+                            // Action Buttons
+                            _buildModalActionButtons(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .scale(
+          begin: const Offset(0.8, 0.8),
+          end: const Offset(1.0, 1.0),
+          duration: 300.ms,
+          curve: Curves.easeOutBack,
+        );
+  }
+
+  Widget _buildDateSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Select Date',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF333333),
+          ),
+        ),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: _selectDate,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.grey[50]!,
+                  Colors.grey[100]!.withOpacity(0.5),
+                  Colors.grey[50]!,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFFFF6B00).withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  color: const Color(0xFFFF6B00),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  selectedDate != null
+                      ? '${selectedDate!.day} ${_getMonthName(selectedDate!.month)} ${selectedDate!.year}'
+                      : 'Select Date',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: selectedDate != null
+                        ? Colors.black
+                        : Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: const Color(0xFFFF6B00),
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTimeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Select Time',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF333333),
+          ),
+        ),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: _selectTime,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.grey[50]!,
+                  Colors.grey[100]!.withOpacity(0.5),
+                  Colors.grey[50]!,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFFFF6B00).withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.access_time,
+                  color: const Color(0xFFFF6B00),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  selectedTime != null
+                      ? '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}'
+                      : 'Select Time',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: selectedTime != null
+                        ? Colors.black
+                        : Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: const Color(0xFFFF6B00),
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDurationSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Session Duration',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF333333),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.grey[50]!,
+                Colors.grey[100]!.withOpacity(0.5),
+                Colors.grey[50]!,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: const Color(0xFFFF6B00).withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.timer, color: const Color(0xFFFF6B00), size: 20),
+              const SizedBox(width: 12),
+              Text(
+                selectedDuration,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                Icons.arrow_drop_down,
+                color: const Color(0xFFFF6B00),
+                size: 24,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTherapistSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Therapist',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF333333),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.grey[50]!,
+                Colors.grey[100]!.withOpacity(0.5),
+                Colors.grey[50]!,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: const Color(0xFFFF6B00).withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.person, color: const Color(0xFFFF6B00), size: 20),
+              const SizedBox(width: 12),
+              Text(
+                selectedTherapist,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Icon(
+                Icons.arrow_drop_down,
+                color: const Color(0xFFFF6B00),
+                size: 24,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModalActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: _closeScheduleModal,
+            child: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Center(
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: GestureDetector(
+            onTap: _confirmSchedule,
+            child: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFFFF6B00),
+                    const Color(0xFFFF8C42),
+                    const Color(0xFFFFA500),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFF6B00).withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Center(
+                child: Text(
+                  'Confirm Schedule',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _selectDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFFFF6B00),
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
+
+  Future<void> _selectTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: selectedTime ?? const TimeOfDay(hour: 10, minute: 0),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFFFF6B00),
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != selectedTime) {
+      setState(() {
+        selectedTime = picked;
+      });
+    }
+  }
+
   Widget _buildSessionHistorySection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,10 +826,15 @@ class _BookSessionPageState extends State<BookSessionPage> {
                         showScheduleButton:
                             session['showScheduleButton'] as bool,
                         isSelected: isSelected,
+                        time: session['time'] as String?,
                         onTap: () {
-                          setState(() {
-                            selectedSessionIndex = index;
-                          });
+                          if (session['showScheduleButton'] as bool) {
+                            _openScheduleModal();
+                          } else {
+                            setState(() {
+                              selectedSessionIndex = index;
+                            });
+                          }
                         },
                       )
                       .animate()
@@ -897,6 +1468,7 @@ class _BookSessionPageState extends State<BookSessionPage> {
     required bool isCompleted,
     bool showScheduleButton = false,
     bool isSelected = false,
+    String? time,
     VoidCallback? onTap,
   }) {
     return GestureDetector(
@@ -954,7 +1526,7 @@ class _BookSessionPageState extends State<BookSessionPage> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    date,
+                    time != null ? '$date at $time' : date,
                     style: TextStyle(
                       fontSize: 14,
                       color: isSelected
