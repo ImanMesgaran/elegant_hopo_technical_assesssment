@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:elegant_hopo_technical_assessment/core/di/injection.dart';
-import 'package:elegant_hopo_technical_assessment/features/user/domain/entities/user.dart';
-import 'package:elegant_hopo_technical_assessment/features/user/presentation/bloc/user_bloc.dart';
-import 'package:elegant_hopo_technical_assessment/features/user/presentation/bloc/user_event.dart';
-import 'package:elegant_hopo_technical_assessment/features/user/presentation/pages/user_list_page.dart';
-import 'package:elegant_hopo_technical_assessment/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:elegant_hopo_technical_assessment/features/auth/presentation/pages/auth_page.dart';
-import 'package:elegant_hopo_technical_assessment/main.dart';
+import 'package:elegant_hopo_technical_assessment/features/packages/presentation/pages/packages.dart';
+import 'package:elegant_hopo_technical_assessment/features/packages/presentation/pages/book_session_page.dart';
+import 'package:elegant_hopo_technical_assessment/features/packages/presentation/pages/package_list_screen.dart';
+import 'package:elegant_hopo_technical_assessment/features/splash/presentation/pages/splash_screen.dart';
 
 /// Application router using GoRouter.
 class AppRouter {
@@ -22,36 +17,23 @@ class AppRouter {
     routes: [
       GoRoute(
         path: '/',
-        name: 'home',
-        builder: (context, state) => const HomePage(),
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
       ),
       GoRoute(
-        path: '/users',
-        name: 'users',
-        builder: (context, state) => BlocProvider(
-          create: (context) => getIt<UserBloc>()..add(const GetUsersEvent()),
-          child: const UserListPage(),
-        ),
+        path: '/packages',
+        name: 'packages',
+        builder: (context, state) => const PackagesPage(),
       ),
       GoRoute(
-        path: '/auth',
-        name: 'auth',
-        builder: (context, state) => BlocProvider(
-          create: (context) => getIt<AuthBloc>(),
-          child: const AuthPage(),
-        ),
+        path: '/package-list',
+        name: 'package-list',
+        builder: (context, state) => const PackageListScreen(),
       ),
       GoRoute(
-        path: '/users/:id',
-        name: 'user_details',
-        builder: (context, state) {
-          final id = state.pathParameters['id']!;
-          return BlocProvider(
-            create: (context) => getIt<UserBloc>()..add(GetUserEvent(id)),
-            child:
-                const UserListPage(), // Replace with UserDetailsPage when created
-          );
-        },
+        path: '/book-session-screen',
+        name: 'book-session-screen',
+        builder: (context, state) => const BookSessionPage(),
       ),
     ],
     errorBuilder: (context, state) => const ErrorPage(),
