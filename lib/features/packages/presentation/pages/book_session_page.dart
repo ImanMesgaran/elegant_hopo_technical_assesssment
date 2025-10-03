@@ -245,6 +245,7 @@ class _BookSessionPageState extends State<BookSessionPage> {
         SizedBox(
           height: 200.0,
           child: ListView.builder(
+            shrinkWrap: true,
             itemCount: sessions.length,
             itemBuilder: (context, index) {
               final session = sessions[index];
@@ -551,10 +552,14 @@ class _BookSessionPageState extends State<BookSessionPage> {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.medical_services,
-                  color: Color(0xFFFF6B00),
-                  size: 28,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/images/face-massage-1.jpg',
+                    width: 80,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               )
               .animate()
