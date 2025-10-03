@@ -2,6 +2,39 @@
 
 A Flutter application designed for beauty package booking and session management, built as a technical assessment showcasing modern Flutter development practices with clean architecture principles.
 
+## 📱 App Demo
+
+<div align="center">
+  <h3>🎬 App Animation</h3>
+  <img src="ReadMe/Screenrecorder-2025-10-03-11-15-27-191_2.gif" alt="App Demo Animation" height="720" style="border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+</div>
+
+<br>
+
+<div align="center">
+  <h3>📸 App Screenshots</h3>
+  <table>
+    <tr>
+      <td align="center" width="25%">
+        <h4>📱 Splash Screen</h4>
+        <img src="ReadMe/Screenshot_2025-10-03-11-25-31-033_com.eleganthopo.app.technical_challenge.jpg" alt="Splash Screen" height="720" style="border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+      </td>
+      <td align="center" width="25%">
+        <h4>📦 Package List</h4>
+        <img src="ReadMe/Screenshot_2025-10-03-11-25-40-070_com.eleganthopo.app.technical_challenge.jpg" alt="Package List" height="720" style="border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+      </td>
+      <td align="center" width="25%">
+        <h4>📅 Session Booking</h4>
+        <img src="ReadMe/Screenshot_2025-10-03-11-25-52-106_com.eleganthopo.app.technical_challenge.jpg" alt="Session Booking" height="720" style="border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+      </td>
+      <td align="center" width="25%">
+        <h4>🎯 Session Details</h4>
+        <img src="ReadMe/Screenshot_2025-10-03-11-26-00-162_com.eleganthopo.app.technical_challenge.jpg" alt="Session Details" height="720" style="border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+      </td>
+    </tr>
+  </table>
+</div>
+
 ## 🚀 Features
 
 ### Core Functionality
